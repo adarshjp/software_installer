@@ -1,15 +1,15 @@
 from typing import List, Dict, Type
 from applications.base import baseApplication
 from applications.notepadplusplus import NotepadPlusPlus
-# from applications.firefox import Firefox
-# from applications.msteams import MSTeams
+from applications.firefox import Firefox
+from applications.msteams import MSTeams
 
 class UpdateManager:
     def __init__(self):
-        self.app_registry: Dict[str, Type[BaseApplication]] = {
+        self.app_registry: Dict[str, Type[baseApplication]] = {
             "notepadplusplus": NotepadPlusPlus,
-            # "firefox": Firefox,
-            # "msteams": MSTeams
+            "firefox": Firefox,
+            "msteams": MSTeams
         }
 
     def get_supported_apps(self) -> List[str]:
@@ -34,31 +34,42 @@ class UpdateManager:
             print(f"Latest Version:    {latest_version}")
 
             if installed_version == "Not Installed":
-                print(f"{app_instance.name} is not installed.")
-                continue
-
-            if installed_version == latest_version:
+                print(f"ℹ️ {app_instance.name} is not installed.")
+                summary_status = "Not Installed"
+            elif installed_version == latest_version:
                 print("✅ Already up to date.")
+                summary_status = "Up to date"
             else:
-                print("⬇️  Update available. Downloading installer...")
-                installer_path = app_instance.download_installer()
+                print("⬇️  Update available.")
+                response = input(f"Do you want to update {app_instance.name} from {installed_version} to {latest_version}? (y/n): ").lower()
 
-                if installer_path:
-                    success = app_instance.install_update(installer_path)
-                    if success:
-                        print("✅ Update installed successfully.")
+                if response == 'y' or response == 'yes':
+                    print("Downloading installer...")
+                    installer_path = app_instance.download_installer()
+
+                    if installer_path:
+                        print("Installing update...")
+                        success = app_instance.install_update(installer_path)
+                        if success:
+                            print("✅ Update installed successfully.")
+                            summary_status = "Update Successful"
+                        else:
+                            print("❌ Update failed.")
+                            summary_status = "Update Failed"
                     else:
-                        print("❌ Update failed.")
+                        print("❌ Failed to download installer.")
+                        summary_status = "Download Failed"
                 else:
-                    print("❌ Failed to download installer.")
+                    print("⏭️  Update skipped.")
+                    summary_status = "Update Skipped"
 
             summary.append({
                 "App": app_instance.name,
                 "Installed": installed_version,
                 "Latest": latest_version,
-                "Updated": installed_version != latest_version
+                "Status": summary_status
             })
 
         print("\n📝 Summary:")
-        for item in summary:
-            print(f"{item['App']}: Installed - {item['Installed']} | Latest - {item['Latest']} | Updated - {item['Updated']}")
+        for item in summary: # Corrected loop variable name
+            print(f"{item['App']}: Installed - {item['Installed']} | Latest - {item['Latest']} | Status - {item['Status']}")
