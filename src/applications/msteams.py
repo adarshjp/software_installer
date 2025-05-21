@@ -3,6 +3,9 @@ import re
 import requests
 import subprocess
 from applications.base import baseApplication
+from utils.version import is_newer_version
+from utils.downloader import download_file
+
 
 class MSTeams(baseApplication):
     def __init__(self):
@@ -37,14 +40,27 @@ class MSTeams(baseApplication):
 
     def download_installer(self) -> str:
         try:
-            response = requests.get(self.download_url, stream=True)
-            with open(self.installer_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-            return self.installer_path
-        except Exception as e:
-            print(f"Error downloading installer: {e}")
+            if download_file(self.download_url, self.installer_path):
+                return self.installer_path
             return ""
+        except Exception as e: # Should ideally be caught by download_file, but as a fallback.
+            print(f"Unexpected error during download_installer for MS Teams: {e}")
+            return ""
+
+    def needs_update(self) -> bool:
+        installed_version = self.get_installed_version()
+        latest_version = self.get_latest_version()
+
+        if latest_version == "Unknown":
+            print(f"Cannot determine the latest version for {self.name}. Update check skipped.")
+            return False
+
+        if installed_version == "Not Installed":
+            # If a latest version is known, and it's not installed, it needs "updating" (i.e., installing)
+            print(f"{self.name} is not installed. Installation recommended if latest version '{latest_version}' is desired.")
+            return True
+
+        return is_newer_version(latest_version, installed_version)
 
     def install_update(self, installer_path: str) -> bool:
         try:

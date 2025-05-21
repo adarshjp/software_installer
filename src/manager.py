@@ -27,21 +27,9 @@ class UpdateManager:
             app_instance = app_class()
             print(f"\n🔍 Checking {app_instance.name}...")
 
-            installed_version = app_instance.get_installed_version()
-            latest_version = app_instance.get_latest_version()
-
-            print(f"Installed Version: {installed_version}")
-            print(f"Latest Version:    {latest_version}")
-
-            if installed_version == "Not Installed":
-                print(f"ℹ️ {app_instance.name} is not installed.")
-                summary_status = "Not Installed"
-            elif installed_version == latest_version:
-                print("✅ Already up to date.")
-                summary_status = "Up to date"
-            else:
+            if app_instance.needs_update():
                 print("⬇️  Update available.")
-                response = input(f"Do you want to update {app_instance.name} from {installed_version} to {latest_version}? (y/n): ").lower()
+                response = input(f"Do you want to update {app_instance.name}? (y/n): ").lower()
 
                 if response == 'y' or response == 'yes':
                     print("Downloading installer...")
@@ -62,14 +50,17 @@ class UpdateManager:
                 else:
                     print("⏭️  Update skipped.")
                     summary_status = "Update Skipped"
+            else:
+                print("✅ Already up to date.")
+                summary_status = "Up to date"
 
             summary.append({
                 "App": app_instance.name,
-                "Installed": installed_version,
-                "Latest": latest_version,
+                "Installed": app_instance.get_installed_version(),
+                "Latest": app_instance.get_latest_version(),
                 "Status": summary_status
             })
 
         print("\n📝 Summary:")
-        for item in summary: # Corrected loop variable name
+        for item in summary:
             print(f"{item['App']}: Installed - {item['Installed']} | Latest - {item['Latest']} | Status - {item['Status']}")
