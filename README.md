@@ -38,7 +38,7 @@ Currently, the following applications are supported:
 
 1.  **Clone the repository (if applicable):**
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/adarshjp/software_installer.git
     cd software_installer
     ```
 
