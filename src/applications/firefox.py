@@ -8,17 +8,28 @@ from utils.downloader import download_file
 
 
 class Firefox(baseApplication):
-    def __init__(self):
+    def __init__(self) -> None:
         self.name = "Firefox"
-        self.version_url = "https://product-details.mozilla.org/1.0/firefox_versions.json"
-        self.download_url = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
+        self.version_url = (
+            "https://product-details.mozilla.org/1.0/firefox_versions.json"
+        )
+        self.download_url = (
+            "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
+        )
         self.installer_path = os.path.join(os.getcwd(), "firefox_installer.exe")
 
     def get_installed_version(self) -> str:
         try:
             result = subprocess.run(
-                ['reg', 'query', r'HKEY_LOCAL_MACHINE\SOFTWARE\Mozilla\Mozilla Firefox', '/v', 'CurrentVersion'],
-                capture_output=True, text=True
+                [
+                    "reg",
+                    "query",
+                    r"HKEY_LOCAL_MACHINE\SOFTWARE\Mozilla\Mozilla Firefox",
+                    "/v",
+                    "CurrentVersion",
+                ],
+                capture_output=True,
+                text=True,
             )
             match = re.search(r"CurrentVersion\s+REG_SZ\s+([\d.]+)", result.stdout)
             if match:
@@ -42,7 +53,9 @@ class Firefox(baseApplication):
             if download_file(self.download_url, self.installer_path):
                 return self.installer_path
             return ""
-        except Exception as e: # Should ideally be caught by download_file, but as a fallback.
+        except (
+            Exception
+        ) as e:  # Should ideally be caught by download_file, but as a fallback.
             print(f"Unexpected error during download_installer for Firefox: {e}")
             return ""
 
@@ -51,19 +64,23 @@ class Firefox(baseApplication):
         latest_version = self.get_latest_version()
 
         if latest_version == "Unknown":
-            print(f"Cannot determine the latest version for {self.name}. Update check skipped.")
+            print(
+                f"Cannot determine the latest version for {self.name}. Update check skipped."
+            )
             return False
 
         if installed_version == "Not Installed":
             # If a latest version is known, and it's not installed, it needs "updating" (i.e., installing)
-            print(f"{self.name} is not installed. Installation recommended if latest version '{latest_version}' is desired.")
+            print(
+                f"{self.name} is not installed. Installation recommended if latest version '{latest_version}' is desired."
+            )
             return True
 
         return is_newer_version(latest_version, installed_version)
 
     def install_update(self, installer_path: str) -> bool:
         try:
-            subprocess.run([installer_path, '/silent'], check=True)
+            subprocess.run([installer_path, "/silent"], check=True)
             return True
         except subprocess.CalledProcessError as e:
             print(f"Installer failed: {e}")

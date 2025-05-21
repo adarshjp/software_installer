@@ -3,3 +3,8 @@ flake8
 mypy
 pytest
 packaging
+types-requests
+black
+BeautifulSoup4
+elevate
+pywin32

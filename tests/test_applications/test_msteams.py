@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock
-import subprocess # Import the subprocess module
+import subprocess  # Import the subprocess module
 from applications.msteams import MSTeams
+
 
 class TestMSTeams(unittest.TestCase):
 
@@ -26,7 +27,7 @@ class TestMSTeams(unittest.TestCase):
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_download_installer(self, mock_open, mock_get):
         mock_response = MagicMock()
-        mock_response.iter_content = lambda chunk_size: [b'teamsdata']
+        mock_response.iter_content = lambda chunk_size: [b"teamsdata"]
         mock_get.return_value = mock_response
 
         app = MSTeams()
@@ -40,14 +41,21 @@ class TestMSTeams(unittest.TestCase):
         result = app.install_update("teams_installer.exe")
         self.assertTrue(result)
 
-    @patch("subprocess.run", side_effect=subprocess.CalledProcessError(
-        returncode=1,
-        cmd=['teams_installer.exe', '/quiet'] # Assuming '/quiet' is the silent flag for Teams
-    ))
+    @patch(
+        "subprocess.run",
+        side_effect=subprocess.CalledProcessError(
+            returncode=1,
+            cmd=[
+                "teams_installer.exe",
+                "/quiet",
+            ],  # Assuming '/quiet' is the silent flag for Teams
+        ),
+    )
     def test_install_update_failure(self, mock_run):
         app = MSTeams()
         result = app.install_update("teams_installer.exe")
         self.assertFalse(result)
+
 
 if __name__ == "__main__":
     unittest.main()

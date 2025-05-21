@@ -4,12 +4,13 @@ from applications.notepadplusplus import NotepadPlusPlus
 from applications.firefox import Firefox
 from applications.msteams import MSTeams
 
+
 class UpdateManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.app_registry: Dict[str, Type[baseApplication]] = {
             "notepadplusplus": NotepadPlusPlus,
             "firefox": Firefox,
-            "msteams": MSTeams
+            "msteams": MSTeams,
         }
 
     def get_supported_apps(self) -> List[str]:
@@ -31,7 +32,7 @@ class UpdateManager:
                 print("⬇️  Update available.")
                 response = input(f"Do you want to update {app_instance.name}? (y/n): ").lower()
 
-                if response == 'y' or response == 'yes':
+                if response in ['y', 'yes']:
                     print("Downloading installer...")
                     installer_path = app_instance.download_installer()
 
@@ -61,6 +62,7 @@ class UpdateManager:
                 "Status": summary_status
             })
 
+        # Print the summary at the end
         print("\n📝 Summary:")
         for item in summary:
             print(f"{item['App']}: Installed - {item['Installed']} | Latest - {item['Latest']} | Status - {item['Status']}")

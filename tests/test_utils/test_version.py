@@ -1,6 +1,7 @@
 import unittest
 from utils.version import is_newer_version
 
+
 class TestVersionUtils(unittest.TestCase):
 
     def test_newer_version_true(self):

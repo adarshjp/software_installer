@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock
-import subprocess # Import the subprocess module
+import subprocess  # Import the subprocess module
 from applications.firefox import Firefox
+
 
 class TestFirefox(unittest.TestCase):
 
@@ -16,9 +17,7 @@ class TestFirefox(unittest.TestCase):
     def test_get_latest_version(self, mock_get):
         mock_response = MagicMock()
         mock_response.ok = True
-        mock_response.json.return_value = {
-            "LATEST_FIREFOX_VERSION": "126.0.1"
-        }
+        mock_response.json.return_value = {"LATEST_FIREFOX_VERSION": "126.0.1"}
         mock_get.return_value = mock_response
 
         app = Firefox()
@@ -29,7 +28,7 @@ class TestFirefox(unittest.TestCase):
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_download_installer(self, mock_open, mock_get):
         mock_response = MagicMock()
-        mock_response.iter_content = lambda chunk_size: [b'testdata']
+        mock_response.iter_content = lambda chunk_size: [b"testdata"]
         mock_get.return_value = mock_response
 
         app = Firefox()
@@ -43,14 +42,17 @@ class TestFirefox(unittest.TestCase):
         result = app.install_update("dummy_path.exe")
         self.assertTrue(result)
 
-    @patch("subprocess.run", side_effect=subprocess.CalledProcessError(
-        returncode=1,
-        cmd=['dummy_path.exe', '/silent']
-    ))
+    @patch(
+        "subprocess.run",
+        side_effect=subprocess.CalledProcessError(
+            returncode=1, cmd=["dummy_path.exe", "/silent"]
+        ),
+    )
     def test_install_update_failure(self, mock_run):
         app = Firefox()
         result = app.install_update("dummy_path.exe")
         self.assertFalse(result)
+
 
 if __name__ == "__main__":
     unittest.main()

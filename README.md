@@ -67,14 +67,14 @@ The primary way to use this tool is likely through a main script (e.g., `main.py
 
 To check and update Notepad++:
 ```bash
-python main.py notepadplusplus
+python src/main.py --apps notepadplusplus
 ```
 
 To check and update all supported applications:
 ```bash
-python main.py firefox notepadplusplus msteams
+python src/main.py --apps firefox notepadplusplus msteams
 # or
-python main.py --all
+python src/main.py --apps all
 ```
 
 
@@ -94,3 +94,8 @@ pytest tests
 *   `tests/`: Contains unit tests for the application and utility modules.
 *   `main.py` / `manager.py`: (Assumed) Entry point and/or core logic for managing updates.
 
+## Challenges
+*   **Version Comparison**: Ensuring accurate version comparison across different applications.
+*   **Silent Installation**: Different applications have different command-line arguments for silent installation.
+*   **Error Handling**: Robust error handling for network issues, file access, etc.
+*  **Teams**: This could not be found in registry, so the code is commented out.
